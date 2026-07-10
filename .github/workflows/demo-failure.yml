@@ -1,0 +1,30 @@
+name: FailSift Demo
+
+on:
+  workflow_dispatch:
+    inputs:
+      scenario:
+        description: Failure format to demonstrate
+        type: choice
+        required: true
+        default: typescript
+        options:
+          - typescript
+          - pytest
+
+permissions:
+  contents: read
+
+jobs:
+  controlled-failure:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Emit a safe example failure
+        shell: bash
+        run: |
+          if [ "${{ inputs.scenario }}" = "pytest" ]; then
+            echo "FAILED tests/test_orders.py::test_create_order - AssertionError: expected 201, received 500"
+          else
+            echo "src/config.ts(18,7): error TS2322: Type 'string' is not assignable to type 'number'."
+          fi
+          exit 1
