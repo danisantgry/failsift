@@ -27,7 +27,7 @@ describe("distribution contracts", () => {
   });
 
   it("keeps every committed workflow valid YAML", async () => {
-    const workflows = ["ci.yml", "codeql.yml", "demo-failure.yml", "publish-npm.yml"];
+    const workflows = ["ci.yml", "codeql.yml", "demo-failure.yml", "failsift.yml", "publish-npm.yml"];
     for (const workflow of workflows) {
       const document = parse(await readFile(join(root, ".github", "workflows", workflow), "utf8"));
       expect(document).toHaveProperty("name");
