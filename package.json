@@ -63,11 +63,11 @@
     "strip-ansi": "^7.1.2"
   },
   "devDependencies": {
-    "@types/node": "^24.0.0",
+    "@types/node": "^26.1.1",
     "@vitest/coverage-v8": "^4.1.8",
     "esbuild": "^0.28.1",
     "tsx": "^4.19.2",
-    "typescript": "^6.0.3",
+    "typescript": "^7.0.2",
     "vitest": "^4.1.8",
     "yaml": "^2.8.1"
   }
