@@ -1,0 +1,6 @@
+npm error code ERESOLVE
+npm error ERESOLVE unable to resolve dependency tree
+npm error While resolving: sample@1.0.0
+npm error Found: react@19.0.0
+npm error Could not resolve dependency: peer react@^18 from sample-plugin@2.0.0
+npm error command failed

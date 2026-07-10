@@ -1,0 +1,22 @@
+name: Maintainer feedback
+description: Share a real adoption result or workflow need.
+title: "[Feedback]: "
+labels: [feedback]
+body:
+  - type: textarea
+    id: context
+    attributes:
+      label: Repository maintenance context
+      description: Public repository links are welcome but not required.
+    validations:
+      required: true
+  - type: textarea
+    id: outcome
+    attributes:
+      label: What did FailSift help with, or where did it fall short?
+    validations:
+      required: true
+  - type: textarea
+    id: improvement
+    attributes:
+      label: Most valuable next improvement

@@ -1,0 +1,8 @@
+import type { Parser } from "./types.js";
+export declare const typescriptParser: Parser;
+export declare const eslintParser: Parser;
+export declare const testParser: Parser;
+export declare const packageManagerParser: Parser;
+export declare const pytestParser: Parser;
+export declare const genericParser: Parser;
+export declare const builtInParsers: Parser[];

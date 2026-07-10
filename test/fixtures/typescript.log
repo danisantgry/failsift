@@ -1,0 +1,6 @@
+2026-07-10T12:00:00.000Z Run npm run build
+2026-07-10T12:00:00.100Z api_key=example-secret-value
+2026-07-10T12:00:00.200Z Contact build-owner@example.com
+2026-07-10T12:00:00.300Z C:\Users\build-owner\project\src\config.ts(18,7): error TS2322: Type 'string' is not assignable to type 'number'.
+2026-07-10T12:00:00.400Z npm error command failed with exit code 2
+2026-07-10T12:00:00.500Z ##[error]Process completed with exit code 2.

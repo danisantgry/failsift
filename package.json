@@ -1,0 +1,74 @@
+{
+  "name": "failsift",
+  "version": "0.1.0",
+  "description": "Turn noisy CI logs into concise, secret-safe, actionable failure reports.",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/danisantgry/failsift.git"
+  },
+  "bugs": {
+    "url": "https://github.com/danisantgry/failsift/issues"
+  },
+  "homepage": "https://github.com/danisantgry/failsift#readme",
+  "bin": {
+    "failsift": "dist/cli.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "action.yml",
+    "README.md",
+    "LICENSE",
+    "PRIVACY.md",
+    "SECURITY.md"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "scripts": {
+    "dev": "tsx src/cli.ts",
+    "build": "tsc && node scripts/build-action.mjs",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "lint": "tsc --noEmit",
+    "check": "npm run lint && npm run test:coverage && npm run build",
+    "prepublishOnly": "npm run check"
+  },
+  "keywords": [
+    "ci",
+    "github-actions",
+    "debugging",
+    "logs",
+    "developer-tools",
+    "devops",
+    "testing",
+    "open-source"
+  ],
+  "author": "danisantgry",
+  "license": "MIT",
+  "dependencies": {
+    "@actions/core": "^3.0.1",
+    "@actions/github": "^9.1.1",
+    "commander": "^14.0.2",
+    "strip-ansi": "^7.1.2"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "@vitest/coverage-v8": "^4.1.8",
+    "esbuild": "^0.28.1",
+    "tsx": "^4.19.2",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.8",
+    "yaml": "^2.8.1"
+  }
+}

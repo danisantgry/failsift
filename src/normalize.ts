@@ -1,0 +1,14 @@
+import stripAnsi from "strip-ansi";
+import type { NormalizedLine } from "./types.js";
+
+const timestampPrefix = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z\s+/u;
+
+export function normalize(input: string): NormalizedLine[] {
+  return input.split(/\r?\n/u).map((raw, index) => ({
+    number: index + 1,
+    text: stripAnsi(raw)
+      .replace(timestampPrefix, "")
+      .replace(/^##\[(error|warning|notice)\]/iu, "[$1] ")
+      .trimEnd()
+  }));
+}

@@ -1,0 +1,49 @@
+name: Bug report
+description: Report an incorrect diagnosis or product defect.
+title: "[Bug]: "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: Never attach a raw private log. Remove secrets, usernames, emails, repository names, and internal URLs first.
+  - type: input
+    id: version
+    attributes:
+      label: FailSift version
+      placeholder: 0.1.0
+    validations:
+      required: true
+  - type: dropdown
+    id: surface
+    attributes:
+      label: Surface
+      options:
+        - Local CLI
+        - GitHub Action
+        - GitHub run CLI command
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected diagnosis
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual diagnosis
+    validations:
+      required: true
+  - type: textarea
+    id: excerpt
+    attributes:
+      label: Fully anonymized minimal log excerpt
+      render: text
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: Privacy confirmation
+      options:
+        - label: I checked the excerpt for secrets and personal or private data.
+          required: true

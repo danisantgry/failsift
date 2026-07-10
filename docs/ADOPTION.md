@@ -1,0 +1,19 @@
+# Adoption And Validation
+
+FailSift will be evaluated by usefulness rather than manufactured engagement.
+
+## Beta Success Signals
+
+- The correct cause ranks first in at least 85% of the maintained fixture set.
+- Reports reduce visible log volume by at least 95% on long fixtures without hiding the error location.
+- Setup takes less than five minutes in a repository with GitHub Actions.
+- No known secret fixture appears in terminal, Markdown, JSON, or Action output.
+- External feedback produces reproducible issues or parser fixtures.
+
+## Public Evidence
+
+Adoption can be measured through npm downloads, public workflow references to `danisantgry/failsift`, external issues, and pull requests. FailSift has no product telemetry and will not fabricate users, stars, reports, or testimonials.
+
+## Beta Requests
+
+Maintainers can open a feedback issue with the ecosystem, CI provider, and a fully anonymized excerpt. Private logs should never be attached to a public issue.

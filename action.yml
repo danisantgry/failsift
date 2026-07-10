@@ -1,0 +1,43 @@
+name: FailSift
+description: Turn failed GitHub Actions logs into a concise, secret-safe report.
+author: danisantgry
+branding:
+  icon: filter
+  color: red
+inputs:
+  github-token:
+    description: Token used to read Actions logs and comment on pull requests.
+    required: true
+  run-id:
+    description: Completed workflow run ID to analyze.
+    required: true
+  repository:
+    description: Repository in owner/name form. Defaults to GITHUB_REPOSITORY.
+    required: false
+    default: ""
+  comment:
+    description: Post the report on the associated pull request.
+    required: false
+    default: "true"
+  update-comment:
+    description: Update the previous FailSift comment for this workflow.
+    required: false
+    default: "true"
+  max-log-mb:
+    description: Maximum combined failed-job log size in megabytes.
+    required: false
+    default: "50"
+outputs:
+  primary-error:
+    description: The highest-ranked failure message.
+  confidence:
+    description: Confidence in the primary failure classification.
+  fingerprint:
+    description: Stable fingerprint for the primary failure.
+  redaction-count:
+    description: Number of sensitive values removed.
+  report-path:
+    description: Path to the generated Markdown report.
+runs:
+  using: node24
+  main: dist/action.cjs

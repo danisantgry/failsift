@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="520" viewBox="0 0 1200 520" role="img" aria-labelledby="title desc">
+  <title id="title">FailSift terminal diagnosis</title>
+  <desc id="desc">A terminal showing a concise TypeScript CI failure report.</desc>
+  <rect width="1200" height="520" fill="#f4f7fb"/>
+  <rect x="40" y="36" width="1120" height="448" rx="8" fill="#10151c"/>
+  <rect x="40" y="36" width="1120" height="48" rx="8" fill="#1e2936"/>
+  <rect x="40" y="76" width="1120" height="8" fill="#1e2936"/>
+  <circle cx="72" cy="60" r="7" fill="#ef6461"/>
+  <circle cx="96" cy="60" r="7" fill="#f4bd4f"/>
+  <circle cx="120" cy="60" r="7" fill="#53c878"/>
+  <text x="600" y="66" text-anchor="middle" fill="#cbd5e1" font-family="Segoe UI, Arial, sans-serif" font-size="16">failsift analyze ci.log</text>
+  <g font-family="Consolas, Menlo, monospace" font-size="20">
+    <text x="78" y="126" fill="#8bd5ca">FailSift report</text>
+    <text x="274" y="126" fill="#a7b3c2">(high confidence)</text>
+    <text x="78" y="166" fill="#a7b3c2">Source: ci.log</text>
+    <text x="78" y="222" fill="#f7c66a">Primary</text>
+    <text x="170" y="222" fill="#e8edf3">[TypeScript] TS2322: Type 'string' is not assignable to type 'number'.</text>
+    <text x="78" y="262" fill="#a7b3c2">Location:</text>
+    <text x="190" y="262" fill="#e8edf3">src/config.ts:18:7</text>
+    <text x="78" y="302" fill="#a7b3c2">Fingerprint:</text>
+    <text x="226" y="302" fill="#8bd5ca">fs1-4d5be8a87a87a066</text>
+    <text x="78" y="358" fill="#f7c66a">Next step</text>
+    <text x="78" y="396" fill="#e8edf3">Run the repository's type-check command locally.</text>
+    <text x="78" y="446" fill="#7f8c9d">Reduced 2,841 log lines by 99%. Redactions: 3.</text>
+  </g>
+</svg>

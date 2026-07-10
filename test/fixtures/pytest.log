@@ -1,0 +1,6 @@
+============================= test session starts =============================
+collected 12 items
+tests/test_orders.py ...........F
+E   AssertionError: expected status 201, received 500
+FAILED tests/test_orders.py::test_create_order - AssertionError: expected status 201, received 500
+========================== 1 failed, 11 passed ================================

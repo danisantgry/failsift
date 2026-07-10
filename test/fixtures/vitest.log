@@ -1,0 +1,7 @@
+RUN  v4.1.8 /work/project
+FAIL src/math.test.ts > add > returns the sum
+AssertionError: expected 4 to be 5
+ at src/math.test.ts:9:18
+Tests 1 failed | 3 passed
+Command failed with exit code 1
+Process completed with exit code 1.

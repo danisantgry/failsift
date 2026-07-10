@@ -1,0 +1,9 @@
+node_modules/
+coverage/
+.env
+.failsift/
+*.log
+!test/fixtures/*.log
+*.tgz
+.DS_Store
+dist/*.map

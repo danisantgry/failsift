@@ -1,0 +1,4 @@
+Starting deployment
+[error] fatal: database migration lock is already held
+Cleaning temporary files
+Process completed with exit code 1.
