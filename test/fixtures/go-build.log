@@ -1,0 +1,4 @@
+Run go build ./...
+# example.dev/orders/internal/total
+internal/total/calculate.go:27:14: cannot use subtotal (variable of type string) as int value in return statement
+Error: Process completed with exit code 1.

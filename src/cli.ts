@@ -8,6 +8,7 @@ import { GithubClient } from "./github.js";
 import { readInput, resolveLimits } from "./input.js";
 import { renderReport } from "./render.js";
 import type { OutputFormat } from "./types.js";
+import { VERSION } from "./version.js";
 
 interface CommonOptions {
   format: OutputFormat;
@@ -20,7 +21,7 @@ export async function main(argv = process.argv): Promise<number> {
   program
     .name("failsift")
     .description("Turn noisy CI logs into concise, secret-safe failure reports.")
-    .version("0.1.0")
+    .version(VERSION)
     .showHelpAfterError()
     .exitOverride();
 

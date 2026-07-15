@@ -1,4 +1,4 @@
-name: FailSift
+name: FailSift CI Failure Diagnosis
 description: Turn failed GitHub Actions logs into a concise, secret-safe report.
 author: danisantgry
 branding:

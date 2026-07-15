@@ -2,6 +2,7 @@ import { Readable } from "node:stream";
 import { analyzeText } from "./analyze.js";
 import { NetworkError } from "./errors.js";
 import { readStreamLimited, resolveLimits } from "./input.js";
+import { VERSION } from "./version.js";
 export class GithubClient {
     repository;
     token;
@@ -108,7 +109,7 @@ export class GithubClient {
         const headers = new Headers(init.headers);
         headers.set("Accept", "application/vnd.github+json");
         headers.set("X-GitHub-Api-Version", "2026-03-10");
-        headers.set("User-Agent", "failsift/0.1.0");
+        headers.set("User-Agent", `failsift/${VERSION}`);
         if (this.token)
             headers.set("Authorization", `Bearer ${this.token}`);
         let response;

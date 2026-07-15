@@ -18,3 +18,18 @@ Each parser needs:
 3. A negative or mixed-format case when the signature could overlap another tool.
 
 Scores above 90 are reserved for signatures that identify both the tool and the failure. Generic runtime errors should stay below compiler and test assertions. Process exit summaries should be marked `cascade`.
+
+## Built-in parser IDs
+
+| ID | Primary signals |
+| --- | --- |
+| `typescript` | TypeScript compiler diagnostics |
+| `eslint` | ESLint locations and rules |
+| `javascript-tests` | Vitest and Jest assertions |
+| `package-manager` | npm, pnpm, and Yarn dependency failures |
+| `pytest` | pytest summaries and exceptions |
+| `go` | Go build, test, module, and panic output |
+| `rust` | rustc, Cargo resolution, and test panic output |
+| `generic` | Tool-independent fatal, timeout, and process signals |
+
+When formats overlap, the ecosystem parser should emit a higher-specificity candidate and generic wrappers should be omitted or marked as cascades. A test should verify that the useful diagnostic wins, not merely that a parser matched.

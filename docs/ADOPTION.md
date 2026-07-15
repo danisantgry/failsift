@@ -17,3 +17,12 @@ Adoption can be measured through npm downloads, public workflow references to `d
 ## Beta Requests
 
 Maintainers can open a feedback issue with the ecosystem, CI provider, and a fully anonymized excerpt. Private logs should never be attached to a public issue.
+
+## Five-minute beta
+
+1. Add the workflow from the README without changing the existing CI workflow.
+2. Let it observe one failed run or trigger a safe failure on a branch.
+3. Check whether the first reported failure points to the real repair.
+4. Open a feedback issue with the fingerprint and an anonymized excerpt when it does not.
+
+The useful question is not whether every failure can be recognized. It is whether FailSift shortens the path from a red CI run to the first productive local command.

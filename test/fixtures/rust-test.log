@@ -1,0 +1,17 @@
+Run cargo test --all
+running 1 test
+test totals::applies_discount ... FAILED
+
+failures:
+
+---- totals::applies_discount stdout ----
+thread 'totals::applies_discount' panicked at src/totals.rs:31:5:
+assertion `left == right` failed: discounted total should be 90
+  left: 100
+ right: 90
+
+failures:
+    totals::applies_discount
+
+test result: FAILED. 0 passed; 1 failed
+error: test failed, to rerun pass `--lib`

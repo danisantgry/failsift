@@ -2,6 +2,7 @@
 
 [![CI](https://github.com/danisantgry/failsift/actions/workflows/ci.yml/badge.svg)](https://github.com/danisantgry/failsift/actions/workflows/ci.yml)
 [![npm](https://img.shields.io/npm/v/failsift?color=cb3837)](https://www.npmjs.com/package/failsift)
+[![GitHub Marketplace](https://img.shields.io/badge/Marketplace-FailSift-2088ff?logo=github)](https://github.com/marketplace/actions/failsift-ci-failure-diagnosis)
 [![License: MIT](https://img.shields.io/badge/license-MIT-2f855a.svg)](LICENSE)
 [![No telemetry](https://img.shields.io/badge/telemetry-none-2563eb.svg)](PRIVACY.md)
 
@@ -14,12 +15,18 @@ FailSift turns noisy CI logs into a concise, secret-safe diagnosis. It ranks the
 A failed CI run often ends with a generic exit code while the useful error is buried thousands of lines earlier. FailSift applies deterministic parsers locally, redacts sensitive values before analysis, and reports the highest-signal failure without executing any log content.
 
 - No account, service, model, API key, or telemetry.
-- TypeScript, ESLint, Vitest/Jest, npm/pnpm/yarn, pytest, and generic runtime failures.
+- TypeScript, ESLint, Vitest/Jest, npm/pnpm/yarn, pytest, Go, Rust/Cargo, and generic runtime failures.
 - Stable fingerprints for grouping recurring failures.
 - Safe GitHub Action for completed workflow runs.
 - Idempotent pull request comments instead of one new comment per rerun.
 
 ## Quick Start
+
+Try FailSift against a safe example log without cloning the repository:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/danisantgry/failsift/main/test/fixtures/rust-compile.log | npx failsift analyze -
+```
 
 Analyze a downloaded log:
 
@@ -80,6 +87,8 @@ jobs:
 
 The analyzer runs only after the original workflow completes. It downloads logs for failed jobs, never checks out pull request code, never executes log content, and uses the minimum permissions shown above. If no pull request is associated with the run, the report is written to the Action job summary only.
 
+Want to see it before installing? Open the [controlled failure workflow](https://github.com/danisantgry/failsift/actions/workflows/demo-failure.yml) and inspect the following FailSift run. The scenarios cover TypeScript, pytest, Go, and Rust with synthetic, secret-free logs.
+
 For stronger supply-chain pinning, replace `@v0` with a full release commit SHA.
 
 ## CLI
@@ -111,16 +120,16 @@ Read [PRIVACY.md](PRIVACY.md) for the data model and [SECURITY.md](SECURITY.md) 
 
 ## Supported Signals
 
-| Ecosystem | Signals in v0.1 |
+| Ecosystem | Signals |
 | --- | --- |
 | TypeScript | Compiler codes, files, lines, and columns |
 | ESLint | Rule, file, line, and column |
 | Vitest/Jest | Failed test files and assertion errors |
 | npm/pnpm/yarn | Dependency resolution and lifecycle failures |
 | pytest | Failed tests and exception summaries |
+| Go | Build errors, failed tests, module resolution, and panics |
+| Rust/Cargo | Compiler codes, source locations, dependency resolution, and test panics |
 | Generic CI | Fatal errors, runtime errors, timeouts, and exit cascades |
-
-Rust/Cargo and Go parsers are planned after the first external validation round.
 
 ## Development
 
@@ -141,8 +150,8 @@ Real anonymized failure formats are especially valuable. Start with [CONTRIBUTIN
 ## Roadmap
 
 - Validate the diagnosis against real public CI failures.
-- Add Cargo and Go parsers from anonymized fixtures.
 - Detect recurring fingerprints and likely flaky tests.
+- Add opt-in parser packs for additional ecosystems.
 - Consider optional AI explanations only for already-redacted structured reports.
 
 ## License

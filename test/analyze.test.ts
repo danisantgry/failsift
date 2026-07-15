@@ -18,6 +18,10 @@ describe("analyzeText", () => {
     ["eslint.log", "ESLint", "lint", "never used"],
     ["npm.log", "npm", "dependency", "ERESOLVE"],
     ["pytest.log", "pytest", "test", "received 500"],
+    ["go-build.log", "Go", "compile", "cannot use subtotal"],
+    ["go-test.log", "Go test", "test", "expected status 201"],
+    ["rust-compile.log", "Rust", "compile", "E0308"],
+    ["rust-test.log", "Cargo test", "test", "discounted total"],
     ["generic.log", "Generic", "runtime", "migration lock"]
   ])("ranks the root cause in %s", async (file, framework, category, message) => {
     const report = await analyzeFixture(file);
@@ -85,5 +89,38 @@ describe("analyzeText", () => {
     });
     expect(report.primaryFailure?.category).toBe("timeout");
     expect(report.confidence).toBe("medium");
+  });
+
+  it("captures Go and Rust source locations", async () => {
+    const go = await analyzeFixture("go-build.log");
+    expect(go.primaryFailure).toMatchObject({
+      file: "internal/total/calculate.go",
+      line: 27,
+      column: 14
+    });
+
+    const rust = await analyzeFixture("rust-compile.log");
+    expect(rust.primaryFailure).toMatchObject({ file: "src/config.rs", line: 18, column: 9 });
+    expect(rust.secondaryFailures.some((failure) => failure.message.includes("could not compile"))).toBe(true);
+    expect(rust.secondaryFailures.filter((failure) => failure.message.includes("could not compile"))).toHaveLength(1);
+  });
+
+  it("recognizes Go module and runtime failures", () => {
+    const dependency = analyzeText("go: example.dev/lib@v1.2.3: invalid version", {
+      source: { kind: "text", label: "go-mod" }
+    });
+    expect(dependency.primaryFailure).toMatchObject({ framework: "Go modules", category: "dependency" });
+
+    const panic = analyzeText("panic: runtime error: index out of range [2] with length 1", {
+      source: { kind: "text", label: "go-panic" }
+    });
+    expect(panic.primaryFailure).toMatchObject({ framework: "Go", category: "runtime" });
+  });
+
+  it("recognizes Cargo dependency resolution failures", () => {
+    const report = analyzeText("error: failed to select a version for `serde`", {
+      source: { kind: "text", label: "cargo" }
+    });
+    expect(report.primaryFailure).toMatchObject({ framework: "Cargo", category: "dependency" });
   });
 });

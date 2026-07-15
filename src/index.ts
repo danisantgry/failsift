@@ -5,6 +5,7 @@ export { normalize } from "./normalize.js";
 export { builtInParsers } from "./parsers.js";
 export { redact } from "./redact.js";
 export { escapeMarkdown, renderMarkdown, renderReport, renderTerminal } from "./render.js";
+export { VERSION } from "./version.js";
 export type {
   AnalysisReport,
   AnalysisSource,

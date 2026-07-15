@@ -4,5 +4,7 @@ export declare const eslintParser: Parser;
 export declare const testParser: Parser;
 export declare const packageManagerParser: Parser;
 export declare const pytestParser: Parser;
+export declare const goParser: Parser;
+export declare const rustParser: Parser;
 export declare const genericParser: Parser;
 export declare const builtInParsers: Parser[];

@@ -19518,12 +19518,136 @@ var pytestParser = {
     return results;
   }
 };
+var goParser = {
+  id: "go",
+  parse(lines) {
+    const results = [];
+    let failedTest;
+    for (const line of lines) {
+      const trimmed = line.text.trim();
+      const test = /^--- FAIL:\s+(\S+)(?:\s+\([^)]+\))?$/u.exec(trimmed);
+      if (test) {
+        failedTest = test[1];
+        results.push(candidate(line, {
+          parser: "go",
+          framework: "Go test",
+          category: "test",
+          message: `${failedTest} failed`,
+          score: 76,
+          suggestion: `Run go test -run '^${failedTest}$' ./... -v to reproduce the failing test.`
+        }));
+        continue;
+      }
+      const located = /^(?:\.\/)?([^\s:]+\.go):(\d+)(?::(\d+))?:\s*(.+)$/u.exec(trimmed);
+      if (located) {
+        const nearbyTest = lines.slice(Math.max(0, line.number - 8), line.number + 8).map((item) => item.text).join("\n");
+        const inFailedTest = failedTest !== void 0 || located[1].endsWith("_test.go") || /--- FAIL:\s+\S+/u.test(nearbyTest);
+        results.push(candidate(line, {
+          parser: "go",
+          framework: inFailedTest ? "Go test" : "Go",
+          category: inFailedTest ? "test" : "compile",
+          message: located[4],
+          file: located[1],
+          sourceLine: Number(located[2]),
+          ...located[3] ? { column: Number(located[3]) } : {},
+          score: inFailedTest ? 99 : 101,
+          suggestion: inFailedTest ? `Run go test${failedTest ? ` -run '^${failedTest}$'` : ""} ./... -v to reproduce the failing test.` : "Run go build ./... locally with the same Go version used in CI."
+        }));
+        continue;
+      }
+      const dependency = /^go:\s+(.+?)(?:\s*:\s*|\s+)(invalid version|unknown revision|reading .+?:\s*\d{3}.+)$/iu.exec(trimmed);
+      if (dependency) {
+        results.push(candidate(line, {
+          parser: "go",
+          framework: "Go modules",
+          category: "dependency",
+          message: `${dependency[1]}: ${dependency[2]}`,
+          score: 95,
+          suggestion: "Run go mod download and go mod verify using the same proxy settings as CI."
+        }));
+        continue;
+      }
+      const panic = /^panic:\s+(.+)$/u.exec(trimmed);
+      if (panic) {
+        results.push(candidate(line, {
+          parser: "go",
+          framework: "Go",
+          category: "runtime",
+          message: `panic: ${panic[1]}`,
+          score: 92,
+          suggestion: "Re-run the failing Go test with -v and inspect the first application frame in the stack trace."
+        }));
+      }
+    }
+    return results;
+  }
+};
+var rustParser = {
+  id: "rust",
+  parse(lines) {
+    const results = [];
+    for (let index = 0; index < lines.length; index += 1) {
+      const line = lines[index];
+      const trimmed = line.text.trim();
+      const compiler = /^error(?:\[(E\d{4})\])?:\s*(.+)$/u.exec(trimmed);
+      if (compiler) {
+        const location = lines.slice(index + 1, index + 7).map((item) => /^-->\s+(.+?):(\d+):(\d+)$/u.exec(item.text.trim())).find((match) => match !== null);
+        const isCascade = /^could not compile\b|^aborting due to\b/iu.test(compiler[2]);
+        const isDependency = /^failed to select a version for|^no matching package named/iu.test(compiler[2]);
+        results.push(candidate(line, {
+          parser: "rust",
+          framework: isDependency ? "Cargo" : "Rust",
+          category: isDependency ? "dependency" : "compile",
+          message: `${compiler[1] ? `${compiler[1]}: ` : ""}${compiler[2]}`,
+          ...location ? {
+            file: location[1],
+            sourceLine: Number(location[2]),
+            column: Number(location[3])
+          } : {},
+          score: isCascade ? 43 : isDependency ? 97 : 102,
+          ...isCascade ? { cascade: true } : {},
+          suggestion: isDependency ? "Run cargo update -v or cargo tree to inspect the conflicting dependency requirements." : isCascade ? "Inspect the first Rust compiler error earlier in the log." : "Run cargo check --all-targets locally with the same Rust toolchain used in CI."
+        }));
+        continue;
+      }
+      const panic = /^thread '([^']+)' panicked at (.+?):(\d+):(\d+):?$/u.exec(trimmed);
+      if (panic) {
+        const detail = lines[index + 1]?.text.trim();
+        results.push(candidate(line, {
+          parser: "rust",
+          framework: "Cargo test",
+          category: "test",
+          message: `${panic[1]} panicked${detail ? `: ${detail}` : ""}`,
+          file: panic[2],
+          sourceLine: Number(panic[3]),
+          column: Number(panic[4]),
+          score: 100,
+          suggestion: `Run cargo test ${panic[1]} -- --exact --nocapture to reproduce the panic.`
+        }));
+      }
+    }
+    return results;
+  }
+};
 var genericParser = {
   id: "generic",
   parse(lines) {
     const results = [];
     for (const line of lines) {
       const trimmed = line.text.trim();
+      if (/^(?:\[error\]\s*)?(?:error:\s*)?(?:process completed with exit code|command (?:exited|failed) with exit code)/iu.test(trimmed)) {
+        results.push(candidate(line, {
+          parser: "generic",
+          framework: "Generic",
+          category: "process",
+          message: trimmed,
+          score: 25,
+          cascade: true,
+          suggestion: "Inspect the first specific error before the process exit message."
+        }));
+        continue;
+      }
+      if (/^error:\s+(?:could not compile|test failed, to rerun pass)/iu.test(trimmed)) continue;
       const explicit = /^(?:\[error\]\s*)?(fatal(?: error)?|error):\s*(.+)$/iu.exec(trimmed);
       if (explicit) {
         results.push(candidate(line, {
@@ -19536,7 +19660,7 @@ var genericParser = {
         }));
         continue;
       }
-      if (/process completed with exit code|command (?:exited|failed) with exit code|timed out|^killed$/iu.test(trimmed)) {
+      if (/timed out|^killed$/iu.test(trimmed)) {
         results.push(candidate(line, {
           parser: "generic",
           framework: "Generic",
@@ -19557,6 +19681,8 @@ var builtInParsers = [
   testParser,
   packageManagerParser,
   pytestParser,
+  goParser,
+  rustParser,
   genericParser
 ];
 
@@ -19689,6 +19815,9 @@ function confidenceFor(score) {
   return "low";
 }
 
+// src/version.ts
+var VERSION = "0.2.0";
+
 // src/github.ts
 var GithubClient = class {
   constructor(repository, token, fetcher = fetch) {
@@ -19796,7 +19925,7 @@ ${body}`;
     const headers = new Headers(init.headers);
     headers.set("Accept", "application/vnd.github+json");
     headers.set("X-GitHub-Api-Version", "2026-03-10");
-    headers.set("User-Agent", "failsift/0.1.0");
+    headers.set("User-Agent", `failsift/${VERSION}`);
     if (this.token) headers.set("Authorization", `Bearer ${this.token}`);
     let response;
     try {

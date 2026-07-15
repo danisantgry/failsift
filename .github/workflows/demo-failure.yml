@@ -11,6 +11,8 @@ on:
         options:
           - typescript
           - pytest
+          - go
+          - rust
 
 permissions:
   contents: read
@@ -22,9 +24,18 @@ jobs:
       - name: Emit a safe example failure
         shell: bash
         run: |
-          if [ "${{ inputs.scenario }}" = "pytest" ]; then
-            echo "FAILED tests/test_orders.py::test_create_order - AssertionError: expected 201, received 500"
-          else
-            echo "src/config.ts(18,7): error TS2322: Type 'string' is not assignable to type 'number'."
-          fi
+          case "${{ inputs.scenario }}" in
+            pytest)
+              echo "FAILED tests/test_orders.py::test_create_order - AssertionError: expected 201, received 500"
+              ;;
+            go)
+              echo "internal/total/calculate.go:27:14: cannot use subtotal (variable of type string) as int value in return statement"
+              ;;
+            rust)
+              printf '%s\n' "error[E0308]: mismatched types" "  --> src/config.rs:18:9"
+              ;;
+            *)
+              echo "src/config.ts(18,7): error TS2322: Type 'string' is not assignable to type 'number'."
+              ;;
+          esac
           exit 1

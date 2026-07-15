@@ -1,26 +1,55 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="520" viewBox="0 0 1200 520" role="img" aria-labelledby="title desc">
-  <title id="title">FailSift terminal diagnosis</title>
-  <desc id="desc">A terminal showing a concise TypeScript CI failure report.</desc>
-  <rect width="1200" height="520" fill="#f4f7fb"/>
-  <rect x="40" y="36" width="1120" height="448" rx="8" fill="#10151c"/>
-  <rect x="40" y="36" width="1120" height="48" rx="8" fill="#1e2936"/>
-  <rect x="40" y="76" width="1120" height="8" fill="#1e2936"/>
-  <circle cx="72" cy="60" r="7" fill="#ef6461"/>
-  <circle cx="96" cy="60" r="7" fill="#f4bd4f"/>
-  <circle cx="120" cy="60" r="7" fill="#53c878"/>
-  <text x="600" y="66" text-anchor="middle" fill="#cbd5e1" font-family="Segoe UI, Arial, sans-serif" font-size="16">failsift analyze ci.log</text>
-  <g font-family="Consolas, Menlo, monospace" font-size="20">
-    <text x="78" y="126" fill="#8bd5ca">FailSift report</text>
-    <text x="274" y="126" fill="#a7b3c2">(high confidence)</text>
-    <text x="78" y="166" fill="#a7b3c2">Source: ci.log</text>
-    <text x="78" y="222" fill="#f7c66a">Primary</text>
-    <text x="170" y="222" fill="#e8edf3">[TypeScript] TS2322: Type 'string' is not assignable to type 'number'.</text>
-    <text x="78" y="262" fill="#a7b3c2">Location:</text>
-    <text x="190" y="262" fill="#e8edf3">src/config.ts:18:7</text>
-    <text x="78" y="302" fill="#a7b3c2">Fingerprint:</text>
-    <text x="226" y="302" fill="#8bd5ca">fs1-4d5be8a87a87a066</text>
-    <text x="78" y="358" fill="#f7c66a">Next step</text>
-    <text x="78" y="396" fill="#e8edf3">Run the repository's type-check command locally.</text>
-    <text x="78" y="446" fill="#7f8c9d">Reduced 2,841 log lines by 99%. Redactions: 3.</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="620" viewBox="0 0 1200 620" role="img" aria-labelledby="title desc">
+  <title id="title">FailSift turns a noisy CI log into an actionable diagnosis</title>
+  <desc id="desc">A before and after comparison showing a long Rust compiler log reduced to its root cause and source location.</desc>
+  <rect width="1200" height="620" fill="#f3f6fa"/>
+  <text x="54" y="54" fill="#172033" font-family="Segoe UI, Arial, sans-serif" font-size="28" font-weight="700">From red build to root cause</text>
+  <text x="54" y="84" fill="#526075" font-family="Segoe UI, Arial, sans-serif" font-size="16">Deterministic, local, and secret-safe CI diagnosis</text>
+
+  <rect x="50" y="112" width="480" height="450" rx="8" fill="#111821"/>
+  <rect x="50" y="112" width="480" height="46" rx="8" fill="#202b39"/>
+  <rect x="50" y="150" width="480" height="8" fill="#202b39"/>
+  <circle cx="78" cy="135" r="6" fill="#ef6461"/>
+  <circle cx="100" cy="135" r="6" fill="#f4bd4f"/>
+  <circle cx="122" cy="135" r="6" fill="#53c878"/>
+  <text x="290" y="141" text-anchor="middle" fill="#c7d0dc" font-family="Segoe UI, Arial, sans-serif" font-size="14">CI log - 8,247 lines</text>
+  <g font-family="Consolas, Menlo, monospace" font-size="14" fill="#8290a3">
+    <text x="76" y="194">Compiling proc-macro2 v1.0.86</text>
+    <text x="76" y="222">Downloading crates ...</text>
+    <text x="76" y="250">Checking order-core v0.2.0</text>
+    <text x="76" y="278">Running build scripts ...</text>
+    <text x="76" y="306">warning: unused import: std::env</text>
+    <text x="76" y="334" fill="#ff7b72">error[E0308]: mismatched types</text>
+    <text x="76" y="362" fill="#e6edf3">--&gt; src/config.rs:18:9</text>
+    <text x="76" y="390">expected Url, found String</text>
+    <text x="76" y="418">waiting for other jobs to finish ...</text>
+    <text x="76" y="446">error: could not compile order-core</text>
+    <text x="76" y="474">Process completed with exit code 101</text>
+    <text x="76" y="520" fill="#68778c">... 8,236 more lines ...</text>
   </g>
+
+  <path d="M558 337h54" stroke="#238636" stroke-width="5" stroke-linecap="round"/>
+  <path d="m594 321 18 16-18 16" fill="none" stroke="#238636" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <rect x="640" y="112" width="510" height="450" rx="8" fill="#111821"/>
+  <rect x="640" y="112" width="510" height="46" rx="8" fill="#202b39"/>
+  <rect x="640" y="150" width="510" height="8" fill="#202b39"/>
+  <circle cx="668" cy="135" r="6" fill="#ef6461"/>
+  <circle cx="690" cy="135" r="6" fill="#f4bd4f"/>
+  <circle cx="712" cy="135" r="6" fill="#53c878"/>
+  <text x="895" y="141" text-anchor="middle" fill="#c7d0dc" font-family="Segoe UI, Arial, sans-serif" font-size="14">failsift analyze ci.log</text>
+  <g font-family="Consolas, Menlo, monospace" font-size="15">
+    <text x="670" y="198" fill="#7ee787">FailSift report</text>
+    <text x="814" y="198" fill="#a6b3c3">(high confidence)</text>
+    <text x="670" y="238" fill="#a6b3c3">Primary</text>
+    <text x="670" y="268" fill="#ffcf70">[Rust] E0308: mismatched types</text>
+    <text x="670" y="310" fill="#a6b3c3">Location</text>
+    <text x="760" y="310" fill="#e6edf3">src/config.rs:18:9</text>
+    <text x="670" y="352" fill="#a6b3c3">Fingerprint</text>
+    <text x="778" y="352" fill="#79c0ff">fs1-96613a50dc189874</text>
+    <text x="670" y="404" fill="#a6b3c3">Next step</text>
+    <text x="670" y="434" fill="#e6edf3">Run cargo check --all-targets</text>
+    <text x="670" y="462" fill="#e6edf3">with the CI Rust toolchain.</text>
+    <text x="670" y="520" fill="#7d8b9e">Noise reduced by 99%. Redactions: 1.</text>
+  </g>
+  <text x="600" y="598" text-anchor="middle" fill="#526075" font-family="Segoe UI, Arial, sans-serif" font-size="15">No cloud service. No log execution. No telemetry.</text>
 </svg>

@@ -2,6 +2,7 @@ import { readFile, stat } from "node:fs/promises";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { parse } from "yaml";
+import { VERSION } from "../src/version.js";
 
 const root = join(import.meta.dirname, "..");
 
@@ -38,7 +39,9 @@ describe("distribution contracts", () => {
 
   it("ships the CLI and bundled Action in the package contract", async () => {
     const manifest = JSON.parse(await readFile(join(root, "package.json"), "utf8"));
-    expect(manifest).toMatchObject({ name: "failsift", version: "0.1.0", license: "MIT" });
+    expect(manifest).toMatchObject({ name: "failsift", license: "MIT" });
+    expect(manifest.version).toMatch(/^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/u);
+    expect(VERSION).toBe(manifest.version);
     expect(manifest.bin).toEqual({ failsift: "dist/cli.js" });
     expect(manifest.files).toEqual(expect.arrayContaining(["dist", "action.yml", "PRIVACY.md", "SECURITY.md"]));
     expect((await stat(join(root, "dist", "action.cjs"))).size).toBeGreaterThan(10_000);

@@ -1,0 +1,7 @@
+Run go test ./... -v
+=== RUN   TestCreateOrder
+    create_order_test.go:42: expected status 201, got 500
+--- FAIL: TestCreateOrder (0.01s)
+FAIL
+FAIL    example.dev/orders/api    0.014s
+Error: Process completed with exit code 1.
