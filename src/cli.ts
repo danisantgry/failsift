@@ -5,6 +5,7 @@ import { Command, CommanderError, InvalidArgumentError } from "commander";
 import { analyzeText } from "./analyze.js";
 import { FailSiftError, InputError } from "./errors.js";
 import { GithubClient } from "./github.js";
+import { initialize } from "./init.js";
 import { readInput, resolveLimits } from "./input.js";
 import { renderReport } from "./render.js";
 import type { OutputFormat } from "./types.js";
@@ -55,6 +56,34 @@ export async function main(argv = process.argv): Promise<number> {
       await emit(renderReport(result.report, options.format), options.output);
     });
 
+  program.command("init")
+    .description("Create a safe GitHub Action workflow for FailSift.")
+    .argument("[directory]", "Repository directory", ".")
+    .option("-w, --workflow <name>", "CI workflow name to watch; repeat for more than one", collect, [])
+    .option("-o, --output <path>", "Workflow path inside the repository", ".github/workflows/failsift.yml")
+    .option("--dry-run", "Print the workflow without writing it")
+    .option("--force", "Replace a different existing workflow")
+    .action(async (directory: string, options: {
+      workflow: string[];
+      output: string;
+      dryRun?: boolean;
+      force?: boolean;
+    }) => {
+      const result = await initialize({
+        directory,
+        workflows: options.workflow,
+        output: options.output,
+        dryRun: options.dryRun ?? false,
+        force: options.force ?? false
+      });
+      if (result.status === "preview") {
+        process.stdout.write(result.content);
+        return;
+      }
+      const watched = result.workflows.map((name) => `\"${name}\"`).join(", ");
+      process.stdout.write(`FailSift workflow ${result.status}: ${result.outputPath}\nWatching: ${watched}\n`);
+    });
+
   try {
     await program.parseAsync(argv);
     return 0;
@@ -99,6 +128,10 @@ function parseInteger(value: string): number {
   const parsed = Number(value);
   if (!Number.isSafeInteger(parsed) || parsed <= 0) throw new InvalidArgumentError("run ID must be a positive integer");
   return parsed;
+}
+
+function collect(value: string, previous: string[]): string[] {
+  return [...previous, value];
 }
 
 if (process.argv[1] && import.meta.url === new URL(`file://${process.argv[1].replace(/\\/gu, "/")}`).href) {

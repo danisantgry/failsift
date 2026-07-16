@@ -19816,7 +19816,7 @@ function confidenceFor(score) {
 }
 
 // src/version.ts
-var VERSION = "0.2.0";
+var VERSION = "0.3.0";
 
 // src/github.ts
 var GithubClient = class {
@@ -19987,7 +19987,7 @@ function formatLocation(failure) {
   return `${failure.file}${position}`;
 }
 function escapeMarkdown(value) {
-  return value.replace(/&/gu, "&amp;").replace(/</gu, "&lt;").replace(/>/gu, "&gt;").replace(/\|/gu, "\\|").replace(/`/gu, "'").replace(/\r?\n/gu, " ");
+  return value.replace(/&/gu, "&amp;").replace(/</gu, "&lt;").replace(/>/gu, "&gt;").replace(/\r?\n/gu, " ").replace(/[\\`*_[\]{}()#!|]/gu, (character) => `&#${character.codePointAt(0)};`);
 }
 
 // src/action-main.ts

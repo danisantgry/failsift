@@ -2,6 +2,18 @@
 
 All notable changes are documented here. FailSift follows Semantic Versioning.
 
+## [0.3.0] - 2026-07-15
+
+### Added
+
+- `failsift init` for one-command, auto-detected GitHub Action setup.
+- Safe setup controls for dry runs, explicit workflow selection, custom in-repository output, and intentional replacement.
+
+### Security
+
+- Markdown control characters and backslashes are neutralized with numeric entities, closing an incomplete escaping alert.
+- Generated workflows stay inside the target repository and use only `actions: read`, `contents: read`, and `pull-requests: write`.
+
 ## [0.2.0] - 2026-07-14
 
 ### Added

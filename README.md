@@ -22,6 +22,15 @@ A failed CI run often ends with a generic exit code while the useful error is bu
 
 ## Quick Start
 
+Add FailSift to an existing GitHub repository in one command:
+
+```bash
+cd your-repository
+npx failsift init
+```
+
+FailSift detects the primary CI workflow and creates `.github/workflows/failsift.yml` with least-privilege permissions. It will not replace an existing file unless you explicitly pass `--force`. Preview the generated workflow first with `npx failsift init --dry-run`.
+
 Try FailSift against a safe example log without cloning the repository:
 
 ```bash
@@ -59,7 +68,7 @@ Fingerprint: fs1-4d5be8a87a87a066
 
 ## GitHub Action
 
-Create `.github/workflows/failsift.yml` in the repository that should receive diagnoses:
+The fastest setup is `npx failsift init`. For manual installation, create `.github/workflows/failsift.yml` in the repository that should receive diagnoses:
 
 ```yaml
 name: FailSift
@@ -97,11 +106,22 @@ For stronger supply-chain pinning, replace `@v0` with a full release commit SHA.
 failsift analyze <file|-> [--format terminal|markdown|json]
 failsift analyze <file> --output <path> [--max-log-mb 50]
 failsift github --repo owner/repo --run 123456 [--format markdown]
+failsift init [directory] [--workflow CI] [--dry-run]
 ```
 
 `failsift github` reads `GH_TOKEN` or `GITHUB_TOKEN` when authentication is needed. Successful analysis exits with code `0` even when the analyzed log describes a failure. Invalid input exits `2`; GitHub authentication or network failures exit `3`.
 
 The JSON output is versioned with `schemaVersion: 1` and includes the source, primary and secondary failures, frameworks, suggestions, fingerprint, confidence, redaction count, limits, and reduction percentage.
+
+### Safe setup command
+
+`failsift init` parses workflow files as YAML, selects the most likely CI workflow, and writes only inside the selected repository. Repeat `--workflow` to watch more than one workflow:
+
+```bash
+npx failsift init --workflow CI --workflow "Integration Tests"
+```
+
+Existing files are preserved by default. Use `--output` to choose another path, `--dry-run` to print without writing, or `--force` only after reviewing a workflow that you intentionally want to replace.
 
 ## How It Works
 

@@ -1,5 +1,7 @@
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
+import { mkdir, mkdtemp, readFile, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 
@@ -33,5 +35,17 @@ describe("compiled CLI", () => {
       expect(failure.code).toBe(2);
       expect(failure.stderr).toContain("Cannot read input file");
     }
+  });
+
+  it("initializes the GitHub Action from a detected CI workflow", async () => {
+    const project = await mkdtemp(join(tmpdir(), "failsift-cli-"));
+    const workflows = join(project, ".github", "workflows");
+    await mkdir(workflows, { recursive: true });
+    await writeFile(join(workflows, "ci.yml"), "name: CI\non: [push, pull_request]\njobs:\n  test: {}\n");
+    const { stdout, stderr } = await execute(process.execPath, [cli, "init", project], { cwd: root });
+    expect(stderr).toBe("");
+    expect(stdout).toContain("workflow created");
+    expect(stdout).toContain('Watching: "CI"');
+    expect(await readFile(join(workflows, "failsift.yml"), "utf8")).toContain("danisantgry/failsift@v0");
   });
 });

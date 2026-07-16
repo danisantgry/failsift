@@ -1,6 +1,6 @@
 {
   "name": "failsift",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Turn noisy CI logs into concise, secret-safe, actionable failure reports.",
   "type": "module",
   "engines": {
@@ -60,7 +60,8 @@
     "@actions/core": "^3.0.1",
     "@actions/github": "^9.1.1",
     "commander": "^14.0.2",
-    "strip-ansi": "^7.1.2"
+    "strip-ansi": "^7.1.2",
+    "yaml": "^2.8.1"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",
@@ -68,7 +69,6 @@
     "esbuild": "^0.28.1",
     "tsx": "^4.19.2",
     "typescript": "^6.0.3",
-    "vitest": "^4.1.8",
-    "yaml": "^2.8.1"
+    "vitest": "^4.1.8"
   }
 }

@@ -91,7 +91,6 @@ export function escapeMarkdown(value: string): string {
     .replace(/&/gu, "&amp;")
     .replace(/</gu, "&lt;")
     .replace(/>/gu, "&gt;")
-    .replace(/\|/gu, "\\|")
-    .replace(/`/gu, "'")
-    .replace(/\r?\n/gu, " ");
+    .replace(/\r?\n/gu, " ")
+    .replace(/[\\`*_[\]{}()#!|]/gu, (character) => `&#${character.codePointAt(0)};`);
 }

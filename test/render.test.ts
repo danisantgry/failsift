@@ -18,8 +18,8 @@ describe("renderers", () => {
     const output = renderMarkdown(report);
     expect(output).not.toContain("<script>");
     expect(output).toContain("&lt;script&gt;");
-    expect(output).toContain("\\|");
-    expect(output).toContain("'unsafe'");
+    expect(output).toContain("&#124;");
+    expect(output).toContain("&#96;unsafe&#96;");
   });
 
   it("renders versioned JSON with a trailing newline", () => {
@@ -48,6 +48,15 @@ describe("renderers", () => {
   });
 
   it("escapes multiline values", () => {
-    expect(escapeMarkdown("a\nb|c`d<e>")).toBe("a b\\|c'd&lt;e&gt;");
+    expect(escapeMarkdown("a\nb|c`d<e>")).toBe("a b&#124;c&#96;d&lt;e&gt;");
+  });
+
+  it("neutralizes repeated Markdown control characters and backslashes", () => {
+    const escaped = escapeMarkdown("[x](javascript:alert(1)) \\|\\| **bold** # heading");
+    for (const character of ["\\", "`", "*", "_", "[", "]", "{", "}", "(", ")", "!", "|"]) {
+      expect(escaped).not.toContain(character);
+    }
+    expect(escaped).toContain("&#92;");
+    expect(escaped).toContain("&#124;&#92;&#124;");
   });
 });
