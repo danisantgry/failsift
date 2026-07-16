@@ -59,7 +59,7 @@
   "dependencies": {
     "@actions/core": "^3.0.1",
     "@actions/github": "^9.1.1",
-    "commander": "^14.0.2",
+    "commander": "^15.0.0",
     "strip-ansi": "^7.1.2",
     "yaml": "^2.8.1"
   },
