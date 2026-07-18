@@ -13,6 +13,7 @@ All notable changes are documented here. FailSift follows Semantic Versioning.
 ### Improved
 
 - Controlled failure demos now isolate each ecosystem so workflow script text cannot contaminate diagnosis.
+- GitHub log normalization ignores group labels and echoed shell source, preventing command text from outranking real output.
 - GitHub Actions setup uses `actions/setup-node@v7` after cross-platform validation.
 
 ### Security
