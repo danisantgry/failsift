@@ -61,6 +61,37 @@ export interface AnalysisReport {
     limitsApplied: LimitsApplied;
     reductionPercent: number;
 }
+export interface HistoryRunReference {
+    runId: number;
+    runNumber: number;
+    runUrl: string;
+    createdAt: string;
+}
+export interface HistoryFailureGroup {
+    fingerprint: string;
+    framework: string;
+    category: string;
+    message: string;
+    file?: string;
+    occurrences: number;
+    sharePercent: number;
+    runs: HistoryRunReference[];
+}
+export interface HistoryReport {
+    schemaVersion: 1;
+    source: {
+        kind: "github-history";
+        repository: string;
+        workflow: string;
+    };
+    runsAnalyzed: number;
+    actionableRuns: number;
+    unclassifiedRuns: HistoryRunReference[];
+    uniqueFingerprints: number;
+    recurringFingerprints: number;
+    redactionCount: number;
+    failureGroups: HistoryFailureGroup[];
+}
 export interface AnalyzeOptions {
     source: AnalysisSource;
     limits?: Partial<InputLimits>;

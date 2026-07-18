@@ -1,4 +1,4 @@
-import type { AnalysisReport, InputLimits } from "./types.js";
+import type { AnalysisReport, HistoryReport, InputLimits } from "./types.js";
 type FetchLike = typeof fetch;
 interface WorkflowRun {
     id: number;
@@ -6,6 +6,8 @@ interface WorkflowRun {
     name: string;
     html_url: string;
     head_sha: string;
+    run_number: number;
+    created_at: string;
     pull_requests: Array<{
         number: number;
     }>;
@@ -21,6 +23,8 @@ export declare class GithubClient {
     private readonly fetcher;
     constructor(repository: string, token?: string | undefined, fetcher?: FetchLike);
     analyzeRun(runId: number, limits?: Partial<InputLimits>): Promise<GithubAnalysis>;
+    analyzeHistory(workflow: string, limit?: number, limits?: Partial<InputLimits>): Promise<HistoryReport>;
+    private analyzeWorkflowRun;
     upsertComment(pullRequestNumber: number, workflowId: number, body: string, updateExisting: boolean): Promise<"created" | "updated">;
     private listJobs;
     private resolvePullRequest;

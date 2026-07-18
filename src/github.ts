@@ -1,8 +1,9 @@
 import { Readable } from "node:stream";
 import { analyzeText } from "./analyze.js";
 import { NetworkError } from "./errors.js";
+import { buildHistoryReport } from "./history.js";
 import { readStreamLimited, resolveLimits } from "./input.js";
-import type { AnalysisReport, InputLimits } from "./types.js";
+import type { AnalysisReport, HistoryReport, InputLimits } from "./types.js";
 import { VERSION } from "./version.js";
 
 type FetchLike = typeof fetch;
@@ -13,6 +14,8 @@ interface WorkflowRun {
   name: string;
   html_url: string;
   head_sha: string;
+  run_number: number;
+  created_at: string;
   pull_requests: Array<{ number: number }>;
 }
 
@@ -46,8 +49,44 @@ export class GithubClient {
   }
 
   async analyzeRun(runId: number, limits: Partial<InputLimits> = {}): Promise<GithubAnalysis> {
-    const resolvedLimits = resolveLimits(limits);
     const run = await this.requestJson<WorkflowRun>(`/actions/runs/${runId}`);
+    return this.analyzeWorkflowRun(run, limits, true);
+  }
+
+  async analyzeHistory(workflow: string, limit = 10, limits: Partial<InputLimits> = {}): Promise<HistoryReport> {
+    const identifier = workflow.trim();
+    if (!identifier || !/^[\w.-]+$/u.test(identifier)) {
+      throw new NetworkError("Workflow must be a numeric ID or file name such as ci.yml.");
+    }
+    if (!Number.isSafeInteger(limit) || limit < 1 || limit > 25) {
+      throw new NetworkError("History limit must be an integer from 1 to 25.");
+    }
+    const response = await this.requestJson<{ workflow_runs: WorkflowRun[] }>(
+      `/actions/workflows/${encodeURIComponent(identifier)}/runs?status=failure&per_page=${limit}`
+    );
+    const analyses = [];
+    for (const run of response.workflow_runs.slice(0, limit)) {
+      const result = await this.analyzeWorkflowRun(run, limits, false);
+      analyses.push({
+        report: result.report,
+        run: {
+          runId: run.id,
+          runNumber: run.run_number,
+          runUrl: run.html_url,
+          createdAt: run.created_at
+        }
+      });
+    }
+    return buildHistoryReport(this.repository, identifier, analyses);
+  }
+
+  private async analyzeWorkflowRun(
+    run: WorkflowRun,
+    limits: Partial<InputLimits>,
+    resolvePullRequest: boolean
+  ): Promise<GithubAnalysis> {
+    const resolvedLimits = resolveLimits(limits);
+    const runId = run.id;
     const jobs = await this.listJobs(runId);
     const failedJobs = jobs.filter((job) => ["failure", "timed_out", "cancelled", "startup_failure"].includes(job.conclusion ?? ""));
     const parts: string[] = [];
@@ -79,7 +118,7 @@ export class GithubClient {
     return {
       report,
       run,
-      pullRequestNumber: await this.resolvePullRequest(run)
+      pullRequestNumber: resolvePullRequest ? await this.resolvePullRequest(run) : null
     };
   }
 

@@ -12,12 +12,38 @@ function mockGithub(options: { directPull?: boolean; noPull?: boolean; noFailedJ
     const url = String(input);
     const method = init?.method ?? "GET";
     requests.push({ url, method, ...(typeof init?.body === "string" ? { body: init.body } : {}) });
+    if (url.includes("/actions/workflows/ci.yml/runs")) return json({
+      workflow_runs: [
+        {
+          id: 42,
+          workflow_id: 9,
+          name: "CI",
+          html_url: "https://github.com/owner/repo/actions/runs/42",
+          head_sha: "abc123",
+          run_number: 12,
+          created_at: "2026-07-18T12:00:00Z",
+          pull_requests: []
+        },
+        {
+          id: 43,
+          workflow_id: 9,
+          name: "CI",
+          html_url: "https://github.com/owner/repo/actions/runs/43",
+          head_sha: "def456",
+          run_number: 11,
+          created_at: "2026-07-17T12:00:00Z",
+          pull_requests: []
+        }
+      ]
+    });
     if (url.endsWith("/actions/runs/42")) return json({
       id: 42,
       workflow_id: 9,
       name: "CI",
       html_url: "https://github.com/owner/repo/actions/runs/42",
       head_sha: "abc123",
+      run_number: 12,
+      created_at: "2026-07-18T12:00:00Z",
       pull_requests: options.directPull ? [{ number: 7 }] : []
     });
     if (url.includes("/actions/runs/42/jobs")) return json({
@@ -27,7 +53,12 @@ function mockGithub(options: { directPull?: boolean; noPull?: boolean; noFailedJ
         { id: 11, name: "lint", conclusion: "success", html_url: "https://example.test/lint" }
       ]
     });
+    if (url.includes("/actions/runs/43/jobs")) return json({
+      total_count: 1,
+      jobs: [{ id: 12, name: "test", conclusion: "failure", html_url: "https://example.test/test-43" }]
+    });
     if (url.endsWith("/actions/jobs/10/logs")) return new Response("src/app.ts(4,2): error TS1005: ';' expected.");
+    if (url.endsWith("/actions/jobs/12/logs")) return new Response("src/app.ts(9,2): error TS1005: ';' expected.");
     if (url.includes("/commits/abc123/pulls")) return json(options.noPull ? [] : [{ number: 8 }]);
     if (url.includes("/issues/8/comments") && method === "GET") return json(options.noExistingComment ? [] : [{ id: 100, body: "<!-- failsift:workflow:9 -->\nold" }]);
     if (url.endsWith("/issues/comments/100") && method === "PATCH") return json({ id: 100 });
@@ -77,6 +108,27 @@ describe("GithubClient", () => {
     expect(result.pullRequestNumber).toBeNull();
     expect(result.report.primaryFailure).toBeNull();
     expect(result.report.source.jobs).toEqual([]);
+  });
+
+  it("groups recurring failures across recent workflow runs", async () => {
+    const mock = mockGithub();
+    const client = new GithubClient("owner/repo", "token", mock.fetcher);
+    const report = await client.analyzeHistory("ci.yml", 2);
+    expect(report).toMatchObject({
+      runsAnalyzed: 2,
+      actionableRuns: 2,
+      uniqueFingerprints: 1,
+      recurringFingerprints: 1
+    });
+    expect(report.failureGroups[0]).toMatchObject({ occurrences: 2, framework: "TypeScript" });
+    expect(mock.requests.some((request) => request.url.includes("/commits/"))).toBe(false);
+  });
+
+  it("validates workflow history identifiers and bounds", async () => {
+    const mock = mockGithub();
+    const client = new GithubClient("owner/repo", "token", mock.fetcher);
+    await expect(client.analyzeHistory("../ci.yml", 2)).rejects.toThrow(/Workflow must/u);
+    await expect(client.analyzeHistory("ci.yml", 26)).rejects.toThrow(/1 to 25/u);
   });
 
   it("reports invalid repositories and API failures", async () => {

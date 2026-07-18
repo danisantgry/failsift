@@ -2,6 +2,23 @@
 
 All notable changes are documented here. FailSift follows Semantic Versioning.
 
+## [0.4.0] - 2026-07-18
+
+### Added
+
+- `failsift history` for grouping recurring root causes across recent failed workflow runs.
+- Terminal, Markdown, and versioned JSON history reports with occurrence share and safe run links.
+- Bounded history retrieval for public or private repositories using workflow file names or numeric IDs.
+
+### Improved
+
+- Controlled failure demos now isolate each ecosystem so workflow script text cannot contaminate diagnosis.
+- GitHub Actions setup uses `actions/setup-node@v7` after cross-platform validation.
+
+### Security
+
+- History scans are capped at 25 runs, process logs sequentially, and retain only redacted structured diagnoses.
+
 ## [0.3.0] - 2026-07-15
 
 ### Added

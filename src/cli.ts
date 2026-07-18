@@ -5,6 +5,7 @@ import { Command, CommanderError, InvalidArgumentError } from "commander";
 import { analyzeText } from "./analyze.js";
 import { FailSiftError, InputError } from "./errors.js";
 import { GithubClient } from "./github.js";
+import { renderHistoryReport } from "./history-render.js";
 import { initialize } from "./init.js";
 import { readInput, resolveLimits } from "./input.js";
 import { renderReport } from "./render.js";
@@ -54,6 +55,25 @@ export async function main(argv = process.argv): Promise<number> {
       const client = new GithubClient(options.repo, token);
       const result = await client.analyzeRun(options.run, { maxBytes: Math.floor(options.maxLogMb * 1024 * 1024) });
       await emit(renderReport(result.report, options.format), options.output);
+    });
+
+  program.command("history")
+    .description("Group recurring failures across recent failed GitHub Actions runs.")
+    .requiredOption("--repo <owner/repo>", "GitHub repository")
+    .requiredOption("--workflow <file-or-id>", "Workflow file name or numeric ID")
+    .option("--limit <number>", "Failed runs to analyze, from 1 to 25", parseHistoryLimit, 10)
+    .option("-f, --format <format>", "terminal, markdown, or json", parseFormat, "terminal")
+    .option("-o, --output <path>", "Write the history report to a file")
+    .option("--max-log-mb <number>", "Maximum combined log size per run in MB", parsePositive, 10)
+    .action(async (options: CommonOptions & { repo: string; workflow: string; limit: number }) => {
+      const token = process.env.GH_TOKEN || process.env.GITHUB_TOKEN;
+      const client = new GithubClient(options.repo, token);
+      const report = await client.analyzeHistory(
+        options.workflow,
+        options.limit,
+        { maxBytes: Math.floor(options.maxLogMb * 1024 * 1024) }
+      );
+      await emit(renderHistoryReport(report, options.format), options.output);
     });
 
   program.command("init")
@@ -127,6 +147,14 @@ function parsePositive(value: string): number {
 function parseInteger(value: string): number {
   const parsed = Number(value);
   if (!Number.isSafeInteger(parsed) || parsed <= 0) throw new InvalidArgumentError("run ID must be a positive integer");
+  return parsed;
+}
+
+function parseHistoryLimit(value: string): number {
+  const parsed = Number(value);
+  if (!Number.isSafeInteger(parsed) || parsed < 1 || parsed > 25) {
+    throw new InvalidArgumentError("history limit must be an integer from 1 to 25");
+  }
   return parsed;
 }
 

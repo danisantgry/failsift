@@ -1,5 +1,7 @@
 export { analyzeText } from "./analyze.js";
 export { GithubClient } from "./github.js";
+export { buildHistoryReport } from "./history.js";
+export { renderHistoryMarkdown, renderHistoryReport, renderHistoryTerminal } from "./history-render.js";
 export { DEFAULT_LIMITS, measureInput, readInput, readStreamLimited, resolveLimits } from "./input.js";
 export { createWorkflow, initialize } from "./init.js";
 export { normalize } from "./normalize.js";
@@ -14,6 +16,9 @@ export type {
   Confidence,
   Failure,
   FailureCandidate,
+  HistoryFailureGroup,
+  HistoryReport,
+  HistoryRunReference,
   InputLimits,
   LimitsApplied,
   OutputFormat,

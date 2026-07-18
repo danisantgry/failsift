@@ -17,6 +17,7 @@ A failed CI run often ends with a generic exit code while the useful error is bu
 - No account, service, model, API key, or telemetry.
 - TypeScript, ESLint, Vitest/Jest, npm/pnpm/yarn, pytest, Go, Rust/Cargo, and generic runtime failures.
 - Stable fingerprints for grouping recurring failures.
+- History analysis that identifies repeat offenders across recent failed runs.
 - Safe GitHub Action for completed workflow runs.
 - Idempotent pull request comments instead of one new comment per rerun.
 
@@ -53,6 +54,12 @@ Generate a report for automation:
 
 ```bash
 npx failsift analyze ./ci.log --format json --output failsift-report.json
+```
+
+Find failures that keep returning across recent GitHub Actions runs:
+
+```bash
+npx failsift history --repo owner/repo --workflow ci.yml --limit 10
 ```
 
 Example result:
@@ -106,12 +113,26 @@ For stronger supply-chain pinning, replace `@v0` with a full release commit SHA.
 failsift analyze <file|-> [--format terminal|markdown|json]
 failsift analyze <file> --output <path> [--max-log-mb 50]
 failsift github --repo owner/repo --run 123456 [--format markdown]
+failsift history --repo owner/repo --workflow ci.yml [--limit 10]
 failsift init [directory] [--workflow CI] [--dry-run]
 ```
 
 `failsift github` reads `GH_TOKEN` or `GITHUB_TOKEN` when authentication is needed. Successful analysis exits with code `0` even when the analyzed log describes a failure. Invalid input exits `2`; GitHub authentication or network failures exit `3`.
 
 The JSON output is versioned with `schemaVersion: 1` and includes the source, primary and secondary failures, frameworks, suggestions, fingerprint, confidence, redaction count, limits, and reduction percentage.
+
+### Recurring failure history
+
+`failsift history` reads up to 25 recent failed runs for one workflow, analyzes each failed job independently, and groups matching root causes by stable fingerprint. It shows occurrence count, share of actionable failures, and links to the affected runs:
+
+```text
+Recurring failure groups:
+1. 3x / 60% [TypeScript] TS2322: Type 'string' is not assignable to type 'number'.
+   Fingerprint: fs1-4d5be8a87a87a066
+   Runs: #184, #181, #179
+```
+
+Use the workflow file name or numeric workflow ID. Public repositories can be read without authentication; private repositories require `GH_TOKEN` or `GITHUB_TOKEN` with Actions read access. The default is 10 runs and 10 MB of combined failed-job logs per run. JSON and Markdown output use the same `--format` and `--output` options as single-run analysis.
 
 ### Safe setup command
 
@@ -170,7 +191,7 @@ Real anonymized failure formats are especially valuable. Start with [CONTRIBUTIN
 ## Roadmap
 
 - Validate the diagnosis against real public CI failures.
-- Detect recurring fingerprints and likely flaky tests.
+- Compare failed and successful reruns to identify likely flaky tests.
 - Add opt-in parser packs for additional ecosystems.
 - Consider optional AI explanations only for already-redacted structured reports.
 

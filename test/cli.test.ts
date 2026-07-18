@@ -48,4 +48,24 @@ describe("compiled CLI", () => {
     expect(stdout).toContain('Watching: "CI"');
     expect(await readFile(join(workflows, "failsift.yml"), "utf8")).toContain("danisantgry/failsift@v0");
   });
+
+  it("rejects history requests above the safety limit before making a network call", async () => {
+    try {
+      await execute(process.execPath, [
+        cli,
+        "history",
+        "--repo",
+        "owner/repo",
+        "--workflow",
+        "ci.yml",
+        "--limit",
+        "26"
+      ], { cwd: root });
+      throw new Error("CLI unexpectedly succeeded");
+    } catch (error) {
+      const failure = error as Error & { code: number; stderr: string };
+      expect(failure.code).toBe(2);
+      expect(failure.stderr).toContain("history limit must be an integer from 1 to 25");
+    }
+  });
 });

@@ -1,6 +1,7 @@
 import { Readable } from "node:stream";
 import { analyzeText } from "./analyze.js";
 import { NetworkError } from "./errors.js";
+import { buildHistoryReport } from "./history.js";
 import { readStreamLimited, resolveLimits } from "./input.js";
 import { VERSION } from "./version.js";
 export class GithubClient {
@@ -16,8 +17,36 @@ export class GithubClient {
         }
     }
     async analyzeRun(runId, limits = {}) {
-        const resolvedLimits = resolveLimits(limits);
         const run = await this.requestJson(`/actions/runs/${runId}`);
+        return this.analyzeWorkflowRun(run, limits, true);
+    }
+    async analyzeHistory(workflow, limit = 10, limits = {}) {
+        const identifier = workflow.trim();
+        if (!identifier || !/^[\w.-]+$/u.test(identifier)) {
+            throw new NetworkError("Workflow must be a numeric ID or file name such as ci.yml.");
+        }
+        if (!Number.isSafeInteger(limit) || limit < 1 || limit > 25) {
+            throw new NetworkError("History limit must be an integer from 1 to 25.");
+        }
+        const response = await this.requestJson(`/actions/workflows/${encodeURIComponent(identifier)}/runs?status=failure&per_page=${limit}`);
+        const analyses = [];
+        for (const run of response.workflow_runs.slice(0, limit)) {
+            const result = await this.analyzeWorkflowRun(run, limits, false);
+            analyses.push({
+                report: result.report,
+                run: {
+                    runId: run.id,
+                    runNumber: run.run_number,
+                    runUrl: run.html_url,
+                    createdAt: run.created_at
+                }
+            });
+        }
+        return buildHistoryReport(this.repository, identifier, analyses);
+    }
+    async analyzeWorkflowRun(run, limits, resolvePullRequest) {
+        const resolvedLimits = resolveLimits(limits);
+        const runId = run.id;
         const jobs = await this.listJobs(runId);
         const failedJobs = jobs.filter((job) => ["failure", "timed_out", "cancelled", "startup_failure"].includes(job.conclusion ?? ""));
         const parts = [];
@@ -49,7 +78,7 @@ export class GithubClient {
         return {
             report,
             run,
-            pullRequestNumber: await this.resolvePullRequest(run)
+            pullRequestNumber: resolvePullRequest ? await this.resolvePullRequest(run) : null
         };
     }
     async upsertComment(pullRequestNumber, workflowId, body, updateExisting) {

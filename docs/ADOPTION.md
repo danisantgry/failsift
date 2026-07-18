@@ -25,4 +25,12 @@ Maintainers can open a feedback issue with the ecosystem, CI provider, and a ful
 3. Check whether the first reported failure points to the real repair.
 4. Open a feedback issue with the fingerprint and an anonymized excerpt when it does not.
 
+To find repeat offenders before installing the Action, analyze recent failures from a public repository:
+
+```bash
+npx failsift history --repo owner/repo --workflow ci.yml --limit 10
+```
+
+The history report contains redacted diagnoses and run links, not raw logs. For private repositories, set `GH_TOKEN` with Actions read access only.
+
 The useful question is not whether every failure can be recognized. It is whether FailSift shortens the path from a red CI run to the first productive local command.

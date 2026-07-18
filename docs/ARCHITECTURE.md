@@ -20,6 +20,8 @@ file, stdin, or GitHub API
  terminal / Markdown / JSON
 ```
 
+History analysis repeats this bounded pipeline for at most 25 failed runs, then groups only the already-redacted primary failures by stable fingerprint. Raw logs are never retained in the history report.
+
 ## Trust Boundaries
 
 Logs and GitHub event data are untrusted strings. They never become shell commands, template expressions, JavaScript, or HTML. Markdown output escapes HTML, pipes, backticks, and line breaks.
@@ -35,3 +37,5 @@ Confidence is based on the winning score: specific compiler and test formats are
 ## Limits
 
 The default limit is 50 MB and 200,000 lines. Local streams stop when the byte limit is crossed. GitHub downloads are bounded per remaining aggregate budget. Inputs are rejected rather than silently truncated.
+
+The history command defaults to 10 MB per run and accepts at most 25 runs. Requests are processed sequentially to bound memory, API pressure, and temporary log data.
