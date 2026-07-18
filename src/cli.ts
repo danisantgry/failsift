@@ -3,7 +3,7 @@ import { mkdir, writeFile } from "node:fs/promises";
 import { basename, dirname } from "node:path";
 import { Command, CommanderError, InvalidArgumentError } from "commander";
 import { analyzeText } from "./analyze.js";
-import { FailSiftError, InputError } from "./errors.js";
+import { FailSiftError, InputError, NetworkError } from "./errors.js";
 import { GithubClient } from "./github.js";
 import { renderHistoryReport } from "./history-render.js";
 import { initialize } from "./init.js";
@@ -51,7 +51,7 @@ export async function main(argv = process.argv): Promise<number> {
     .option("-o, --output <path>", "Write the report to a file")
     .option("--max-log-mb <number>", "Maximum combined log size in MB", parsePositive, 50)
     .action(async (options: CommonOptions & { repo: string; run: number }) => {
-      const token = process.env.GH_TOKEN || process.env.GITHUB_TOKEN;
+      const token = requireGithubToken();
       const client = new GithubClient(options.repo, token);
       const result = await client.analyzeRun(options.run, { maxBytes: Math.floor(options.maxLogMb * 1024 * 1024) });
       await emit(renderReport(result.report, options.format), options.output);
@@ -66,7 +66,7 @@ export async function main(argv = process.argv): Promise<number> {
     .option("-o, --output <path>", "Write the history report to a file")
     .option("--max-log-mb <number>", "Maximum combined log size per run in MB", parsePositive, 10)
     .action(async (options: CommonOptions & { repo: string; workflow: string; limit: number }) => {
-      const token = process.env.GH_TOKEN || process.env.GITHUB_TOKEN;
+      const token = requireGithubToken();
       const client = new GithubClient(options.repo, token);
       const report = await client.analyzeHistory(
         options.workflow,
@@ -160,6 +160,16 @@ function parseHistoryLimit(value: string): number {
 
 function collect(value: string, previous: string[]): string[] {
   return [...previous, value];
+}
+
+function requireGithubToken(): string {
+  const token = process.env.GH_TOKEN || process.env.GITHUB_TOKEN;
+  if (!token) {
+    throw new NetworkError(
+      "GitHub log access requires GH_TOKEN or GITHUB_TOKEN with Actions read permission. GitHub CLI users can set GH_TOKEN from `gh auth token`."
+    );
+  }
+  return token;
 }
 
 if (process.argv[1] && import.meta.url === new URL(`file://${process.argv[1].replace(/\\/gu, "/")}`).href) {

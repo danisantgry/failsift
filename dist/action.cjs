@@ -19871,7 +19871,7 @@ function buildHistoryReport(repository, workflow, analyses) {
 }
 
 // src/version.ts
-var VERSION = "0.4.0";
+var VERSION = "0.4.1";
 
 // src/github.ts
 var GithubClient = class {

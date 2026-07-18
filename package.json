@@ -1,6 +1,6 @@
 {
   "name": "failsift",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Turn noisy CI logs into concise, secret-safe, actionable failure reports.",
   "type": "module",
   "engines": {

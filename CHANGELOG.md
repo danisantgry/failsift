@@ -2,6 +2,13 @@
 
 All notable changes are documented here. FailSift follows Semantic Versioning.
 
+## [0.4.1] - 2026-07-18
+
+### Fixed
+
+- GitHub commands now fail early with an actionable authentication message when neither `GH_TOKEN` nor `GITHUB_TOKEN` is set.
+- History documentation reflects the token requirement observed for GitHub job-log downloads.
+
 ## [0.4.0] - 2026-07-18
 
 ### Added

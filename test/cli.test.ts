@@ -68,4 +68,25 @@ describe("compiled CLI", () => {
       expect(failure.stderr).toContain("history limit must be an integer from 1 to 25");
     }
   });
+
+  it("explains GitHub log authentication before making a network call", async () => {
+    const environment = { ...process.env };
+    delete environment.GH_TOKEN;
+    delete environment.GITHUB_TOKEN;
+    try {
+      await execute(process.execPath, [
+        cli,
+        "history",
+        "--repo",
+        "owner/repo",
+        "--workflow",
+        "ci.yml"
+      ], { cwd: root, env: environment });
+      throw new Error("CLI unexpectedly succeeded");
+    } catch (error) {
+      const failure = error as Error & { code: number; stderr: string };
+      expect(failure.code).toBe(3);
+      expect(failure.stderr).toContain("requires GH_TOKEN or GITHUB_TOKEN");
+    }
+  });
 });

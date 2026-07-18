@@ -59,8 +59,11 @@ npx failsift analyze ./ci.log --format json --output failsift-report.json
 Find failures that keep returning across recent GitHub Actions runs:
 
 ```bash
+export GH_TOKEN="$(gh auth token)"
 npx failsift history --repo owner/repo --workflow ci.yml --limit 10
 ```
+
+PowerShell users can set the token with `$env:GH_TOKEN = gh auth token`.
 
 Example result:
 
@@ -117,7 +120,7 @@ failsift history --repo owner/repo --workflow ci.yml [--limit 10]
 failsift init [directory] [--workflow CI] [--dry-run]
 ```
 
-`failsift github` reads `GH_TOKEN` or `GITHUB_TOKEN` when authentication is needed. Successful analysis exits with code `0` even when the analyzed log describes a failure. Invalid input exits `2`; GitHub authentication or network failures exit `3`.
+`failsift github` and `failsift history` read `GH_TOKEN` or `GITHUB_TOKEN`. Successful analysis exits with code `0` even when the analyzed log describes a failure. Invalid input exits `2`; GitHub authentication or network failures exit `3`.
 
 The JSON output is versioned with `schemaVersion: 1` and includes the source, primary and secondary failures, frameworks, suggestions, fingerprint, confidence, redaction count, limits, and reduction percentage.
 
@@ -132,7 +135,7 @@ Recurring failure groups:
    Runs: #184, #181, #179
 ```
 
-Use the workflow file name or numeric workflow ID. Public repositories can be read without authentication; private repositories require `GH_TOKEN` or `GITHUB_TOKEN` with Actions read access. The default is 10 runs and 10 MB of combined failed-job logs per run. JSON and Markdown output use the same `--format` and `--output` options as single-run analysis.
+Use the workflow file name or numeric workflow ID. GitHub log downloads require `GH_TOKEN` or `GITHUB_TOKEN`; a fine-grained token needs Actions read access. The token is sent only to `api.github.com` and is never included in a report. The default is 10 runs and 10 MB of combined failed-job logs per run. JSON and Markdown output use the same `--format` and `--output` options as single-run analysis.
 
 ### Safe setup command
 

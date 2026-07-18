@@ -28,9 +28,12 @@ Maintainers can open a feedback issue with the ecosystem, CI provider, and a ful
 To find repeat offenders before installing the Action, analyze recent failures from a public repository:
 
 ```bash
+export GH_TOKEN="$(gh auth token)"
 npx failsift history --repo owner/repo --workflow ci.yml --limit 10
 ```
 
-The history report contains redacted diagnoses and run links, not raw logs. For private repositories, set `GH_TOKEN` with Actions read access only.
+On PowerShell, use `$env:GH_TOKEN = gh auth token`.
+
+The history report contains redacted diagnoses and run links, not raw logs. Set `GH_TOKEN` with Actions read access; the token is sent only to `api.github.com` and never appears in report output.
 
 The useful question is not whether every failure can be recognized. It is whether FailSift shortens the path from a red CI run to the first productive local command.
