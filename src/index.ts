@@ -1,4 +1,5 @@
 export { analyzeText } from "./analyze.js";
+export { createDemoLog } from "./demo.js";
 export { GithubClient } from "./github.js";
 export { buildHistoryReport } from "./history.js";
 export { renderHistoryMarkdown, renderHistoryReport, renderHistoryTerminal } from "./history-render.js";

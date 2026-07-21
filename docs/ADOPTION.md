@@ -20,7 +20,15 @@ Maintainers can open a feedback issue with the ecosystem, CI provider, and a ful
 
 ## Five-minute beta
 
-1. Add the workflow from the README without changing the existing CI workflow.
+Start with the complete local diagnosis before changing a repository:
+
+```bash
+npx failsift demo
+```
+
+The built-in example is deterministic, synthetic, and requires no credentials or network access after package download.
+
+1. Add the workflow with `npx failsift init` without changing the existing CI workflow.
 2. Let it observe one failed run or trigger a safe failure on a branch.
 3. Check whether the first reported failure points to the real repair.
 4. Open a feedback issue with the fingerprint and an anonymized excerpt when it does not.

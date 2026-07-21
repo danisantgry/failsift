@@ -10,6 +10,27 @@ const root = join(import.meta.dirname, "..");
 const cli = join(root, "dist", "cli.js");
 
 describe("compiled CLI", () => {
+  it("runs an instant demo without files, tokens, or network access", async () => {
+    const environment = { ...process.env };
+    delete environment.GH_TOKEN;
+    delete environment.GITHUB_TOKEN;
+    const { stdout, stderr } = await execute(process.execPath, [
+      cli,
+      "demo",
+      "--format",
+      "json"
+    ], { cwd: root, env: environment });
+    const report = JSON.parse(stdout);
+
+    expect(stderr).toBe("");
+    expect(report).toMatchObject({
+      source: { kind: "text", label: "built-in Rust CI demo" },
+      primaryFailure: { framework: "Rust", category: "compile" },
+      redactionCount: 3,
+      reductionPercent: 99
+    });
+  });
+
   it("analyzes a fixture and emits machine-readable JSON", async () => {
     const { stdout, stderr } = await execute(process.execPath, [
       cli,

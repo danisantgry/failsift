@@ -2,6 +2,17 @@
 
 All notable changes are documented here. FailSift follows Semantic Versioning.
 
+## [0.5.0] - 2026-07-21
+
+### Added
+
+- `failsift demo` provides an immediate, deterministic diagnosis without files, credentials, or network access.
+- The built-in demo exercises Rust ranking, typed redaction, source locations, suggestions, and noise reduction across 8,247 synthetic lines.
+
+### Improved
+
+- Noise reduction percentages are floored so a non-empty diagnosis cannot overstate `99.x%` as `100%`.
+
 ## [0.4.1] - 2026-07-18
 
 ### Fixed

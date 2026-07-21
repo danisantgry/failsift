@@ -3,6 +3,7 @@ import { mkdir, writeFile } from "node:fs/promises";
 import { basename, dirname } from "node:path";
 import { Command, CommanderError, InvalidArgumentError } from "commander";
 import { analyzeText } from "./analyze.js";
+import { createDemoLog } from "./demo.js";
 import { FailSiftError, InputError, NetworkError } from "./errors.js";
 import { GithubClient } from "./github.js";
 import { renderHistoryReport } from "./history-render.js";
@@ -30,6 +31,16 @@ export async function main(argv = process.argv) {
         const report = analyzeText(text, {
             source: { kind: file === "-" ? "stdin" : "file", label: file === "-" ? "stdin" : basename(file) },
             limits
+        });
+        await emit(renderReport(report, options.format), options.output);
+    });
+    program.command("demo")
+        .description("Run a safe built-in example without files, tokens, or network access.")
+        .option("-f, --format <format>", "terminal, markdown, or json", parseFormat, "terminal")
+        .option("-o, --output <path>", "Write the demo report to a file")
+        .action(async (options) => {
+        const report = analyzeText(createDemoLog(), {
+            source: { kind: "text", label: "built-in Rust CI demo" }
         });
         await emit(renderReport(report, options.format), options.output);
     });

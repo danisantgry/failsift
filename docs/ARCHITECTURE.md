@@ -2,6 +2,8 @@
 
 FailSift separates untrusted input handling from diagnosis and presentation.
 
+The `failsift demo` command enters through the same analyzer and renderers as user logs. Its large synthetic input is generated locally, making the first-run experience reproducible without maintaining a separate demonstration implementation.
+
 ```text
 file, stdin, or GitHub API
           |

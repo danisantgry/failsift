@@ -36,7 +36,7 @@
   <circle cx="668" cy="135" r="6" fill="#ef6461"/>
   <circle cx="690" cy="135" r="6" fill="#f4bd4f"/>
   <circle cx="712" cy="135" r="6" fill="#53c878"/>
-  <text x="895" y="141" text-anchor="middle" fill="#c7d0dc" font-family="Segoe UI, Arial, sans-serif" font-size="14">failsift analyze ci.log</text>
+  <text x="895" y="141" text-anchor="middle" fill="#c7d0dc" font-family="Segoe UI, Arial, sans-serif" font-size="14">npx failsift demo</text>
   <g font-family="Consolas, Menlo, monospace" font-size="15">
     <text x="670" y="198" fill="#7ee787">FailSift report</text>
     <text x="814" y="198" fill="#a6b3c3">(high confidence)</text>
@@ -49,7 +49,7 @@
     <text x="670" y="404" fill="#a6b3c3">Next step</text>
     <text x="670" y="434" fill="#e6edf3">Run cargo check --all-targets</text>
     <text x="670" y="462" fill="#e6edf3">with the CI Rust toolchain.</text>
-    <text x="670" y="520" fill="#7d8b9e">Noise reduced by 99%. Redactions: 1.</text>
+    <text x="670" y="520" fill="#7d8b9e">8,247 lines reduced by 99%. Redactions: 3.</text>
   </g>
   <text x="600" y="598" text-anchor="middle" fill="#526075" font-family="Segoe UI, Arial, sans-serif" font-size="15">No cloud service. No log execution. No telemetry.</text>
 </svg>

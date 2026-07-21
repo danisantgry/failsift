@@ -19757,7 +19757,7 @@ function analyzeText(input, options, parsers = builtInParsers) {
   const frameworks = [...new Set(ranked.map((item) => item.candidate.framework))].filter((framework) => framework !== "Generic").sort();
   const suggestions = [...new Set(failures.flatMap((failure) => failure.suggestion ? [failure.suggestion] : []))].slice(0, 4);
   const reportedLines = failures.length;
-  const reductionPercent = limitsApplied.linesRead === 0 ? 0 : Math.max(0, Math.round((1 - reportedLines / limitsApplied.linesRead) * 100));
+  const reductionPercent = limitsApplied.linesRead === 0 ? 0 : Math.max(0, Math.floor((1 - reportedLines / limitsApplied.linesRead) * 100));
   return {
     schemaVersion: 1,
     source: options.source,
@@ -19871,7 +19871,7 @@ function buildHistoryReport(repository, workflow, analyses) {
 }
 
 // src/version.ts
-var VERSION = "0.4.1";
+var VERSION = "0.5.0";
 
 // src/github.ts
 var GithubClient = class {

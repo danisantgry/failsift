@@ -8,7 +8,15 @@
 
 FailSift turns noisy CI logs into a concise, secret-safe diagnosis. It ranks the likely root cause, separates cascade failures, suggests a next step, and emits terminal, Markdown, or versioned JSON reports.
 
+```bash
+npx failsift demo
+```
+
+That command analyzes 8,247 synthetic CI lines locally and returns the root cause, source location, stable fingerprint, and next steps. It needs no install, file, account, token, or network access after npm downloads the package.
+
 ![FailSift terminal diagnosis](docs/demo.svg)
+
+If FailSift shortens your path from red build to useful fix, [starring the repository](https://github.com/danisantgry/failsift) helps other maintainers discover it.
 
 ## Why FailSift
 
@@ -21,7 +29,7 @@ A failed CI run often ends with a generic exit code while the useful error is bu
 - Safe GitHub Action for completed workflow runs.
 - Idempotent pull request comments instead of one new comment per rerun.
 
-## Quick Start
+## Install The Action
 
 Add FailSift to an existing GitHub repository in one command:
 
@@ -114,6 +122,7 @@ For stronger supply-chain pinning, replace `@v0` with a full release commit SHA.
 
 ```text
 failsift analyze <file|-> [--format terminal|markdown|json]
+failsift demo [--format terminal|markdown|json]
 failsift analyze <file> --output <path> [--max-log-mb 50]
 failsift github --repo owner/repo --run 123456 [--format markdown]
 failsift history --repo owner/repo --workflow ci.yml [--limit 10]

@@ -22,7 +22,7 @@ export function analyzeText(input, options, parsers = builtInParsers) {
     const reportedLines = failures.length;
     const reductionPercent = limitsApplied.linesRead === 0
         ? 0
-        : Math.max(0, Math.round((1 - reportedLines / limitsApplied.linesRead) * 100));
+        : Math.max(0, Math.floor((1 - reportedLines / limitsApplied.linesRead) * 100));
     return {
         schemaVersion: 1,
         source: options.source,
